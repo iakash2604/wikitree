@@ -29,10 +29,3 @@ if wordbag_path is not None:
     edge_set = colored_growing_branch(wordbag, stop_at_philosophy)
     if create_graph:
         draw_graph(edge_set)
-
-# @TODO
-# 1. diff edge colors for better interpretation
-#   a. Give words mentioned in wordbag diff node colors
-# 2. enforce equal length on edges
-# 3. edge arrow between bounding boxes
-# 4. explore shape of node and connectionstyle in graph
