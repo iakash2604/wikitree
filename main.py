@@ -19,7 +19,8 @@ create_graph = args.create_graph
 stop_at_philosophy = args.stop_at_philosophy
 
 if single_branch is not None:
-    edge_set = make_single_branch(single_branch, stop_at_philosophy)
+    edge_set = make_single_branch(
+        single_branch, stop_at_philosophy,  "#1e90ff")
     if create_graph:
         draw_graph(edge_set)
 

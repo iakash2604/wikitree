@@ -106,7 +106,7 @@ def add_new_edges(edge_set, new_edge_set):
     return edge_set
 
 
-def make_single_branch(first_link, stop_at_philosophy, hex_color, completed_words=None):
+def make_single_branch(first_link, stop_at_philosophy, hex_color):
 
     print("MAKING BRANCH FOR: "+get_word_from_wiki_link(first_link))
     first_link = make_wiki_link_from_word(first_link)
