@@ -160,8 +160,11 @@ def make_growing_branch(wordbag, stop_at_philosophy):
 def draw_graph(edge_set):
     g = nx.DiGraph()
     g.add_edges_from(edge_set)
-    pos = nx.layout.spring_layout(g, iterations=len(g))
+    pos = nx.layout.spring_layout(g)
+    nx.draw_networkx_nodes(g, pos, node_size=800, node_color="none")
+    nx.draw_networkx_labels(g, pos, font_size=9, bbox=dict(
+        facecolor="yellow", pad=0.2, alpha=0.15))
+    nx.draw_networkx_edges(g, pos, connectionstyle='arc3, rad = 0.1',
+                           width=1, arrows=True, edge_color="green", alpha=0.8)
 
-    nx.draw_networkx(g, pos, node_color="white", node_size=800, edge_color="green",  arrowsize=10, bbox=dict(facecolor="none",
-                     edgecolor='black', boxstyle='round'), font_size=10)
     plt.show()
