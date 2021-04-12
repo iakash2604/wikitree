@@ -68,7 +68,7 @@ def get_first_link_in_wiki_article(link):
     return "failed"
 
 
-def make_single_branch(first_link):
+def make_single_branch(first_link, stop_at_philosophy):
 
     first_link = make_wiki_link_from_word(first_link)
     next_link = first_link
@@ -84,6 +84,9 @@ def make_single_branch(first_link):
         else:
             edge_set.append([get_word_from_wiki_link(
                 current_link), get_word_from_wiki_link(next_link)])
+            if stop_at_philosophy is not None and get_word_from_wiki_link(next_link) == "Philosophy":
+                print("Philosophy")
+                break
 
     return edge_set
 
@@ -122,7 +125,7 @@ def convert_edgeset_nodelist_data(edge_set):
     return nodelist_data
 
 
-def make_growing_branch(wordbag):
+def make_growing_branch(wordbag, stop_at_philosophy):
     completed_words = []
     edge_set = []
 
@@ -131,6 +134,10 @@ def make_growing_branch(wordbag):
         num = num+1
         print("STATUS: "+str(num)+"/"+str(len(wordbag)))
         print("current word: "+word)
+        if stop_at_philosophy is not None and word.capitalize() == "Philosophy":
+            print("Skipping philosophy")
+            print("##################")
+            continue
         link = make_wiki_link_from_word(word)
         new_link = get_first_link_in_wiki_article(link)
 
@@ -153,8 +160,8 @@ def make_growing_branch(wordbag):
 def draw_graph(edge_set):
     g = nx.DiGraph()
     g.add_edges_from(edge_set)
-    pos = nx.layout.spring_layout(g, iterations=60)
+    pos = nx.layout.spring_layout(g, iterations=len(g))
 
-    nx.draw_networkx(g, pos, node_size=1, bbox=dict(facecolor="skyblue",
-                     edgecolor='black', boxstyle='round,pad=0.2'), font_size=10)
+    nx.draw_networkx(g, pos, node_color="white", node_size=800, edge_color="green",  arrowsize=10, bbox=dict(facecolor="none",
+                     edgecolor='black', boxstyle='round'), font_size=10)
     plt.show()
