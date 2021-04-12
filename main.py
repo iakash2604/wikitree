@@ -25,7 +25,7 @@ if single_branch is not None:
 
 if wordbag_path is not None:
     wordbag = import_words(wordbag_path)
-    edge_set = make_growing_branch(wordbag, stop_at_philosophy)
+    edge_set = colored_growing_branch(wordbag, stop_at_philosophy)
     if create_graph:
         draw_graph(edge_set)
 
