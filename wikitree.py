@@ -9,14 +9,14 @@ def make_wiki_link_from_word(word):
 
     if(word[:5] == "https"):
         return word
-    return "https://en.wikipedia.org/wiki/" + word.capitalize()
+    return "https://en.wikipedia.org/wiki/" + word
 
 
 def get_word_from_wiki_link(link):
 
     if(link[:5] == "https"):
         return link.split("/")[-1]
-    return link.capitalize()
+    return link
 
 
 def import_words(wordbag_path):
@@ -24,10 +24,10 @@ def import_words(wordbag_path):
     f = open(wordbag_path, "r")
     words = []
     for line in f:
-        if line is None:
+        if line.rstrip() is None:
             continue
         word = line.rstrip()
-        word = word.capitalize()
+        word = word
         words.append(word)
 
     return words
@@ -95,7 +95,18 @@ def get_nodes_from_edge_set(edge_set):
     return nodes
 
 
-def make_single_branch(first_link, stop_at_philosophy, hex_color):
+def add_new_edges(edge_set, new_edge_set):
+    words = [i[0] for i in edge_set]
+    new_words = [i[0] for i in new_edge_set]
+
+    for i, new_word in enumerate(new_words):
+        if(new_word not in words):
+            edge_set.append(new_edge_set[i])
+
+    return edge_set
+
+
+def make_single_branch(first_link, stop_at_philosophy, hex_color, completed_words=None):
 
     print("MAKING BRANCH FOR: "+get_word_from_wiki_link(first_link))
     first_link = make_wiki_link_from_word(first_link)
@@ -109,11 +120,11 @@ def make_single_branch(first_link, stop_at_philosophy, hex_color):
         it = it+1
         print(str(it)+". "+get_word_from_wiki_link(current_link))
         next_link = get_first_link_in_wiki_article(current_link)
+        edge_set.append([get_word_from_wiki_link(current_link),
+                        get_word_from_wiki_link(next_link), hex_color])
         if (next_link in completed_links):
             break
         else:
-            edge_set.append([get_word_from_wiki_link(
-                current_link), get_word_from_wiki_link(next_link), hex_color])
             if stop_at_philosophy is not None and get_word_from_wiki_link(next_link) == "Philosophy":
                 print("Philosophy")
                 break
@@ -125,27 +136,29 @@ def make_single_branch(first_link, stop_at_philosophy, hex_color):
 def colored_growing_branch(wordbag, stop_at_philosophy):
 
     edge_set_total = []
-    # colors = {
-    #     'maroon': '#800000',
-    #     'darkgreen': '#006400',
-    #     'darkblue': '#00008b',
-    #     'mediumorchid': '#ba55d3',
-    #     'darkorange': '#ff8c00',
-    #     'dodgerblue': '#1e90ff',
-    #     'salmon': '#fa8072',
-    #     'deeppink': '#ff1493',
-    #     'lime': '#00ff00',
-    # }
+    colors_dict = {
+        '#800000': 'maroon',
+        '#006400': 'darkgreen',
+        '#00008b': 'darkblue',
+        '#ba55d3': 'mediumorchid',
+        '#ff8c00': 'darkorange',
+        '#1e90ff': 'dodgerblue',
+        '#fa8072': 'salmon',
+        '#ff1493': 'deeppink',
+        '#00ff00': 'lime',
+    }
 
     colors = ['#800000', '#006400', '#00008b', '#ba55d3',
               '#ff8c00', '#1e90ff', '#fa8072', '#ff1493', '#00ff00', ]
 
     for i, word in enumerate(wordbag):
         hex_color = colors[i]
-
-        edge_set_total = edge_set_total + \
-            make_single_branch(word, stop_at_philosophy, hex_color)
-        print(">>>>>>>>>>>>>>>>>REMAINING: "+str(len(wordbag)-1-i))
+        print("branch for "+word+" is being made with color: " +
+              colors_dict[hex_color]+". REMAINING: "+str(len(wordbag)-1-i))
+        # edge_set_total = edge_set_total + \
+        #     make_single_branch(word, stop_at_philosophy, hex_color)
+        edge_set_total = add_new_edges(
+            edge_set_total, make_single_branch(word, stop_at_philosophy, hex_color))
     return edge_set_total
 
 
@@ -182,7 +195,7 @@ def make_growing_branch(wordbag, stop_at_philosophy):
 
 
 def draw_graph(edge_set):
-    g = nx.DiGraph()
+    g = nx.MultiDiGraph()
     color = []
     edges = []
     for edge in edge_set:
